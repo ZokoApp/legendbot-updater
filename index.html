@@ -5,13 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#020617">
 <title>Legends Bot Updater</title>
-<link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;Legends Bot Updater&quot;,&quot;short_name&quot;:&quot;LB Updater&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;%23020617&quot;,&quot;theme_color&quot;:&quot;%23020617&quot;}">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background: radial-gradient(circle at 30% 10%, #1e3a5f 0%, #0f172a 40%, #020617 100%);
+  background: #020617;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -19,16 +18,36 @@ body {
   justify-content: center;
   color: white;
   padding: 20px;
+  overflow: hidden;
+  position: relative;
 }
 
+/* ============ CANVAS MATRIX ============ */
+#matrixCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ============ CARD ============ */
 .card {
+  position: relative;
+  z-index: 10;
   width: 100%;
   max-width: 400px;
-  background: rgba(255,255,255,0.05);
-  border: 0.5px solid rgba(255,255,255,0.12);
+  background: rgba(2,6,23,0.75);
+  border: 0.5px solid rgba(255,255,255,0.1);
   border-radius: 26px;
   padding: 36px 28px 30px;
-  box-shadow: 0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(37,99,235,0.08);
+  box-shadow:
+    0 40px 100px rgba(0,0,0,0.8),
+    0 0 0 1px rgba(37,99,235,0.06);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   animation: fadeIn 0.5s ease;
 }
 
@@ -44,13 +63,13 @@ body {
 }
 
 .logo-wrap img {
-  width: 80px;
-  height: 80px;
+  width: 78px;
+  height: 78px;
   border-radius: 22px;
   box-shadow:
-    0 0 0 3px rgba(37,99,235,0.25),
+    0 0 0 3px rgba(37,99,235,0.3),
     0 0 0 7px rgba(37,99,235,0.07),
-    0 16px 40px rgba(0,0,0,0.5);
+    0 16px 40px rgba(0,0,0,0.6);
   animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
 }
 
@@ -110,7 +129,7 @@ input {
   padding: 13px 14px 13px 38px;
   border-radius: 14px;
   border: 1.5px solid rgba(255,255,255,0.07);
-  background: rgba(2,6,23,0.8);
+  background: rgba(2,6,23,0.9);
   color: #e2e8f0;
   font-size: 0.88rem;
   outline: none;
@@ -142,10 +161,10 @@ input::placeholder { color: #1e293b; }
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: 0 4px 20px rgba(37,99,235,0.35);
+  box-shadow: 0 4px 20px rgba(37,99,235,0.4);
 }
 
-.btn:hover  { background: #1d4ed8; box-shadow: 0 4px 24px rgba(37,99,235,0.5); }
+.btn:hover  { background: #1d4ed8; box-shadow: 0 4px 28px rgba(37,99,235,0.55); }
 .btn:active { transform: scale(0.98); }
 .btn:disabled { background: #1e293b; cursor: not-allowed; box-shadow: none; opacity: 0.5; }
 
@@ -237,6 +256,8 @@ input::placeholder { color: #1e293b; }
 </head>
 <body>
 
+<canvas id="matrixCanvas"></canvas>
+
 <div class="card">
 
   <div class="logo-wrap">
@@ -244,7 +265,7 @@ input::placeholder { color: #1e293b; }
   </div>
 
   <h1>Legends Bot</h1>
-  <div class="subtitle">Actualizador de túnel</div>
+  <div class="subtitle">Actualizador de túnel · config.js</div>
 
   <div class="field">
     <label>Nueva URL de Cloudflare</label>
@@ -277,12 +298,76 @@ input::placeholder { color: #1e293b; }
 
   <div class="repo-tag">
     <svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
-    Legends Bot
+    ZokoApp / legends-bot-v2 · config.js
   </div>
 
 </div>
 
 <script>
+/* ============ MATRIX BINARY RAIN ============ */
+const canvas  = document.getElementById("matrixCanvas");
+const ctx     = canvas.getContext("2d");
+
+const FONT_SIZE = 13;
+const CHARS     = "01";
+const COLOR     = "rgba(37,99,235,"; // azul del tema
+
+let columns = [];
+
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const cols = Math.floor(canvas.width / FONT_SIZE);
+  columns = Array.from({ length: cols }, () => ({
+    y:      Math.random() * -canvas.height,
+    speed:  0.4 + Math.random() * 0.8,
+    opacity: 0.04 + Math.random() * 0.08,
+    length: 8 + Math.floor(Math.random() * 20)
+  }));
+}
+
+function draw() {
+  // Fondo con trail suave
+  ctx.fillStyle = "rgba(2,6,23,0.08)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.font = `${FONT_SIZE}px 'SF Mono', 'Fira Code', monospace`;
+
+  columns.forEach((col, i) => {
+    const x = i * FONT_SIZE;
+
+    for (let j = 0; j < col.length; j++) {
+      const alpha = col.opacity * (1 - j / col.length);
+      // El primer char (cabeza) es más brillante
+      const isHead = j === 0;
+      if (isHead) {
+        ctx.fillStyle = `rgba(147,197,253,${col.opacity * 2.5})`;
+      } else {
+        ctx.fillStyle = `${COLOR}${alpha})`;
+      }
+      const char = CHARS[Math.floor(Math.random() * CHARS.length)];
+      ctx.fillText(char, x, col.y - j * FONT_SIZE);
+    }
+
+    col.y += col.speed;
+
+    // Resetear columna cuando sale de pantalla
+    if (col.y - col.length * FONT_SIZE > canvas.height) {
+      col.y      = Math.random() * -200;
+      col.speed  = 0.4 + Math.random() * 0.8;
+      col.opacity = 0.04 + Math.random() * 0.08;
+      col.length = 8 + Math.floor(Math.random() * 20);
+    }
+  });
+
+  requestAnimationFrame(draw);
+}
+
+window.addEventListener("resize", resize);
+resize();
+draw();
+
+/* ============ GITHUB UPDATE ============ */
 const GITHUB_TOKEN = "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";
 const GITHUB_OWNER = "ZokoApp";
 const GITHUB_REPO  = "legends-bot-v2";
@@ -310,19 +395,11 @@ function setStatus(type, msg) {
 async function updateUrl() {
   const url = document.getElementById("urlInput").value.trim();
 
-  if (!url) {
-    setStatus("error", "Ingresá la URL de Cloudflare");
-    return;
-  }
-
-  if (!url.startsWith("https://")) {
-    setStatus("error", "La URL debe empezar con https://");
-    return;
-  }
+  if (!url) { setStatus("error", "Ingresá la URL de Cloudflare"); return; }
+  if (!url.startsWith("https://")) { setStatus("error", "La URL debe empezar con https://"); return; }
 
   const btn = document.getElementById("btn");
   btn.disabled = true;
-
   setStatus("loading", "Leyendo config.js actual...");
 
   try {
@@ -352,7 +429,6 @@ async function updateUrl() {
     const au = document.getElementById("activeUrl");
     document.getElementById("activeUrlVal").innerText = url;
     au.style.display = "block";
-
     document.getElementById("urlInput").value = "";
 
   } catch (err) {
